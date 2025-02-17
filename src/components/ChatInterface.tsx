@@ -39,9 +39,10 @@ export default function ChatInterface() {
     const message = messages.find(m => m.id === messageId);
     if (!message) return;
     
+    const language: string = message.language; // Ensure language is explicitly typed
   
     try {
-      const translation = await translateText(message.text, message.language, selectedLanguage,);
+      const translation = await translateText(message.text, language, selectedLanguage,);
       setMessages(messages.map(m => 
         m.id === messageId ? { ...m, translation } : m
       ));

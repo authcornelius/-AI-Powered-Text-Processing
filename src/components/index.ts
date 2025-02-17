@@ -1,7 +1,7 @@
 export interface Message {
     id: string;
     text: string;
-    language?: string;
+    language: string;
     summary?: string;
     translation?: string;
   }
