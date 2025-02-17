@@ -49,7 +49,7 @@ export default function MessageList({
                 <button
                   onClick={() => onSummarize(message.id)}
                   className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium
-                           hover:bg-blue-100 transition-colors duration-200"
+                           hover:bg-blue-100 transition-colors duration-200 cursor-pointer"
                 >
                   ✨ Summarize
                 </button>
@@ -72,7 +72,7 @@ export default function MessageList({
                 <button
                   onClick={() => onTranslate(message.id)}
                   className="px-4 py-2 bg-green-50 text-green-600 rounded-lg text-sm font-medium
-                           hover:bg-green-100 transition-colors duration-200"
+                           hover:bg-green-100 transition-colors duration-200 cursor-pointer"
                 >
                   🌐 Translate
                 </button>
