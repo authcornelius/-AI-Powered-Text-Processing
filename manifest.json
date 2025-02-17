@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Language Detector",
+  "version": "1.0",
+  "description": "Detects the language of a given text",
+  "permissions": ["i18n", "activeTab"],  // Ensure necessary permissions
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": ["<all_urls>"],  // Allows for API calls across domains
+  "action": {
+    "default_popup": "popup.html"  // Optional, if you have a popup for interaction
+  }
+}
