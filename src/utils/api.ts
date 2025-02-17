@@ -1,9 +1,8 @@
 export async function detectLanguage(text: string): Promise<string> {
   const languageDetectorCapabilities = await self.ai.languageDetector.capabilities();
-  const canDetect = languageDetectorCapabilities.available;
+  const canDetect: string = languageDetectorCapabilities.available;
 
   if (canDetect === 'no') {
-    // Language detection isn't usable.
     return 'en'; // Default to 'en' if detection is unavailable.
   }
 
@@ -22,16 +21,10 @@ export async function detectLanguage(text: string): Promise<string> {
   }
 
   const results = await detector.detect(text);
-  
-  if (results.length > 0) {
-    const detectedLanguage = results[0].detectedLanguage; // Get the most likely language
-    return detectedLanguage; // Return the detected language
-  }
-  
-  return 'en'; // Default if no language is detected.
+  return results.length > 0 ? results[0].detectedLanguage : 'en';
 }
-  
-export async function summarizeText(text: string): Promise<string> {
+
+export async function summarizeText(text: string): Promise<string | null> {
   const options = {
     sharedContext: 'This is a scientific article',
     type: 'key-points',
@@ -40,50 +33,55 @@ export async function summarizeText(text: string): Promise<string> {
   };
 
   const available = (await self.ai.summarizer.capabilities()).available;
-  let summarizer;
   if (available === 'no') {
-    // The Summarizer API isn't usable.
-    return;
+    return null; // Ensures function always returns a string or null.
   }
+
+  let summarizer;
   if (available === 'readily') {
-    // The Summarizer API can be used immediately .
     summarizer = await self.ai.summarizer.create(options);
   } else {
-    // The Summarizer API can be used after the model is downloaded.
     summarizer = await self.ai.summarizer.create(options);
     summarizer.addEventListener('downloadprogress', (e) => {
       console.log(e.loaded, e.total);
     });
     await summarizer.ready;
   }
+
+  return await summarizer.summarize(text); // Ensures a valid return value.
 }
-  
-export async function translateText(text: string, sourceLanguage: string, targetLanguage: string): Promise<string> {
+
+export async function translateText(
+  text: string,
+  sourceLanguage: string,
+  targetLanguage: string
+): Promise<string> {
   try {
     const translatorCapabilities = await self.ai.translator.capabilities();
-    // Dynamically determine the source language if necessary (e.g., based on the message text or metadata)
 
-    if (!translatorCapabilities.languagePairAvailable(sourceLanguage, targetLanguage)) {
-      throw new Error(`Language pair from ${sourceLanguage} to ${targetLanguage} not supported.`);
+    // Ensure `languagePairAvailable` is properly awaited if it's a function
+    if (typeof translatorCapabilities.languagePairAvailable === 'function') {
+      const isAvailable = await translatorCapabilities.languagePairAvailable(sourceLanguage, targetLanguage);
+      if (!isAvailable) {
+        throw new Error(`Language pair from ${sourceLanguage} to ${targetLanguage} not supported.`);
+      }
     }
 
     const translator = await self.ai.translator.create({
-      sourceLanguage: sourceLanguage,
-      targetLanguage: targetLanguage,
+      sourceLanguage,
+      targetLanguage,
       monitor(m) {
         m.addEventListener('downloadprogress', (e) => {
           console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
         });
       },
     });
-    
 
-    // Perform the translation
-    const translatedText = await translator.translate(text);
-    return translatedText; // Return the translated text
+    return await translator.translate(text);
   } catch (error) {
     console.error("Error during translation:", error);
-    throw error; // Rethrow the error so the caller can handle it
+    throw error;
   }
 }
+
   
