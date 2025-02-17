@@ -15,7 +15,7 @@ export async function detectLanguage(text: string): Promise<string> {
   } else {
     detector = await self.ai.languageDetector.create({
       monitor(m: any) {
-        m.addEventListener('downloadprogress', (e) => {
+        m.addEventListener('downloadprogress', (e: any) => {
           // Removed log: console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
         });
       },
