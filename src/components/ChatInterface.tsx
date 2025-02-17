@@ -55,6 +55,10 @@ export default function ChatInterface() {
 
   return (
     <div className="flex flex-col h-screen">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6 sticky top-0 bg-gray-50 p-10 rounded-lg shadow-md">
+        AI Text Processor
+      </h1>
+
       <MessageList
         messages={messages}
         onSummarize={handleSummarize}
