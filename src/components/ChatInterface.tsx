@@ -27,9 +27,11 @@ export default function ChatInterface() {
 
     try {
       const summary = await summarizeText(message.text);
-      setMessages(messages.map(m => 
-        m.id === messageId ? { ...m, summary } : m
-      ));
+      setMessages(
+        messages.map(m =>
+          m.id === messageId ? { ...m, summary: summary as string } : m
+        )
+      );
     } catch (error) {
       console.error('Summarization failed:', error);
     }
