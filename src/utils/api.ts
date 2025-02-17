@@ -28,7 +28,6 @@ export async function detectLanguage(text: string): Promise<string> {
 }
 
 export async function summarizeText(text: string): Promise<string | null> {
-  // console.log("Checking something", await self.ai.summarizer.capabilities());
   const options = {
     sharedContext: 'This is a scientific article',
     type: 'key-points',
