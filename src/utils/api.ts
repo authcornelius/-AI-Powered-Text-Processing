@@ -28,6 +28,7 @@ export async function detectLanguage(text: string): Promise<string> {
 }
 
 export async function summarizeText(text: string): Promise<string | null> {
+  // console.log("Checking something", await self.ai.summarizer.capabilities());
   const options = {
     sharedContext: 'This is a scientific article',
     type: 'key-points',
@@ -37,7 +38,8 @@ export async function summarizeText(text: string): Promise<string | null> {
 
   const available = (await self.ai.summarizer.capabilities()).available;
   if (available === 'no') {
-    return null; // Ensures function always returns a string or null.
+    // return null; // Ensures function always returns a string or null.
+    return "Summerizer not available on this device";
   }
 
   let summarizer;
