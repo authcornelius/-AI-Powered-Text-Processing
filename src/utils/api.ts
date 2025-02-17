@@ -1,3 +1,6 @@
+declare const self: { ai?: any };
+
+
 export async function detectLanguage(text: string): Promise<string> {
   const languageDetectorCapabilities = await self.ai.languageDetector.capabilities();
   const canDetect: string = languageDetectorCapabilities.available;
@@ -42,7 +45,7 @@ export async function summarizeText(text: string): Promise<string | null> {
     summarizer = await self.ai.summarizer.create(options);
   } else {
     summarizer = await self.ai.summarizer.create(options);
-    summarizer.addEventListener('downloadprogress', (e) => {
+    summarizer.addEventListener('downloadprogress', (e: any) => {
       console.log(e.loaded, e.total);
     });
     await summarizer.ready;
@@ -70,8 +73,8 @@ export async function translateText(
     const translator = await self.ai.translator.create({
       sourceLanguage,
       targetLanguage,
-      monitor(m) {
-        m.addEventListener('downloadprogress', (e) => {
+      monitor(m: any) {
+        m.addEventListener('downloadprogress', (e: any) => {
           console.log(`Downloaded ${e.loaded} of ${e.total} bytes.`);
         });
       },
