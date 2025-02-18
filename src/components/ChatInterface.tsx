@@ -45,7 +45,7 @@ export default function ChatInterface() {
       const summary = await summarizeText(messages[messageIndex].text, filterData);
   
       // Update the message with the new summary
-      updatedMessages[messageIndex] = { ...updatedMessages[messageIndex], summary };
+      updatedMessages[messageIndex] = { ...updatedMessages[messageIndex], summary: summary || "Summary failed" };
       setMessages(updatedMessages);
     } catch (error) {
       console.error('Summarization failed:', error);
