@@ -1,6 +1,5 @@
 declare const self: { ai?: any };
 
-
 export async function detectLanguage(text: string): Promise<string> {
   const languageDetectorCapabilities = await self.ai.languageDetector.capabilities();
   const canDetect: string = languageDetectorCapabilities.available;
@@ -27,36 +26,50 @@ export async function detectLanguage(text: string): Promise<string> {
   return results.length > 0 ? results[0].detectedLanguage : 'en';
 }
 
-export async function summarizeText(text: string): Promise<string | null> {
-  
+export async function summarizeText(
+  text: string, 
+  filterData: {
+    selectedType: string,
+    selectedLength: string,
+    selectedFormat: string,
+  }
+): Promise<string | null> {
   const options = {
     sharedContext: 'This is a scientific article',
-    type: 'key-points',
-    format: 'markdown',
-    length: 'medium',
+    type: filterData?.selectedType,
+    format: filterData?.selectedFormat,
+    length: filterData?.selectedLength,
   };
 
-  
-  const available = (await self.ai.summarizer.capabilities()).available;
-  
-  if (available === 'no') {
-    // return null; // Ensures function always returns a string or null.
-    return null;
-  }
+  try {
+    // Check if summarizer is available
+    const available = (await self.ai.summarizer.capabilities()).available;
 
-  let summarizer;
-  if (available === 'readily') {
-    summarizer = await self.ai.summarizer.create(options);
-  } else {
-    summarizer = await self.ai.summarizer.create(options);
-    summarizer.addEventListener('downloadprogress', (e: any) => {
-      console.log(e.loaded, e.total);
-    });
-    await summarizer.ready;
-  }
+    if (available === 'no') {
+      console.log("Summarizer is not available.");
+      return null; // Return null if summarizer isn't available
+    }
 
-  return await summarizer.summarize(text); // Ensures a valid return value.
+    let summarizer;
+    if (available === 'readily') {
+      summarizer = await self.ai.summarizer.create(options);
+    } else {
+      summarizer = await self.ai.summarizer.create(options);
+      summarizer.addEventListener('downloadprogress', (e: any) => {
+        console.log(`Download Progress: ${e.loaded} / ${e.total}`);
+      });
+      await summarizer.ready; // Ensure the summarizer is ready before proceeding
+    }
+
+    // Perform the summarization
+    const summary = await summarizer.summarize(text);
+    return summary;
+  } catch (error) {
+    console.error("Error during summarization:", error);
+    return null; // Return null on error
+  }
 }
+
 
 export async function translateText(
   text: string,

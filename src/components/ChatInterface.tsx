@@ -8,48 +8,76 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
+  const [selectedType, setSelectedType] = useState('key-points');
+  const [selectedLength, setSelectedLength] = useState('medium');
+  const [selectedFormat, setSelectedFormat] = useState('markdown');
+
   const handleSend = async (text: string) => {
     if (!text.trim()) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
       text,
-      language: await detectLanguage(text)
+      language: await detectLanguage(text),
+      isTranslating: false
     };
 
-    setMessages([...messages, newMessage]);
+    setMessages(prevMessages => [...prevMessages, newMessage]);
   };
 
-
-  const handleSummarize = async (messageId: string) => {
-    const message = messages.find(m => m.id === messageId);
-    if (!message) return;
-
+  const handleSummarize = async (messageId: string, type: string, length: string, format: string) => {
+    
+    const messageIndex = messages.findIndex(m => m.id === messageId);
+    if (messageIndex === -1) return;
+  
     try {
-      const summary = await summarizeText(message.text);
-      setMessages(
-        messages.map(m =>
-          m.id === messageId ? { ...m, summary: summary as string } : m
-        )
-      );
+      const updatedMessages = [...messages];
+      updatedMessages[messageIndex] = { ...updatedMessages[messageIndex], summary: "Generating summary..." };
+      setMessages(updatedMessages);
+
+      const filterData = {
+        selectedType: type,
+        selectedLength: length,
+        selectedFormat: format,
+      }
+  
+      // Generate a new summary
+      const summary = await summarizeText(messages[messageIndex].text, filterData);
+  
+      // Update the message with the new summary
+      updatedMessages[messageIndex] = { ...updatedMessages[messageIndex], summary };
+      setMessages(updatedMessages);
     } catch (error) {
       console.error('Summarization failed:', error);
     }
   };
 
   const handleTranslate = async (messageId: string) => {
+    setMessages(prevMessages =>
+      prevMessages.map(m =>
+        m.id === messageId ? { ...m, isTranslating: true } : m
+      )
+    );
+
     const message = messages.find(m => m.id === messageId);
     if (!message) return;
-    
-    const language: string = message.language; // Ensure language is explicitly typed
-  
+
     try {
-      const translation = await translateText(message.text, language, selectedLanguage,);
-      setMessages(messages.map(m => 
-        m.id === messageId ? { ...m, translation } : m
-      ));
+      const translation = await translateText(message.text, message.language, selectedLanguage);
+      
+      
+      setMessages(prevMessages =>
+        prevMessages.map(m =>
+          m.id === messageId ? { ...m, translation, isTranslating: false } : m
+        )
+      );
     } catch (error) {
       console.error('Translation failed:', error);
+      setMessages(prevMessages =>
+        prevMessages.map(m =>
+          m.id === messageId ? { ...m, isTranslating: false } : m
+        )
+      );
     }
   };
 
@@ -65,6 +93,14 @@ export default function ChatInterface() {
         onTranslate={handleTranslate}
         selectedLanguage={selectedLanguage}
         onLanguageChange={setSelectedLanguage}
+
+        selectedType={selectedType}
+        selectedLength={selectedLength}
+        selectedFormat={selectedFormat}
+
+        onTypeChange={setSelectedType}
+        onLengthChange={setSelectedLength}
+        onFormatChange={setSelectedFormat}
       />
       <InputArea onSend={handleSend} />
     </div>

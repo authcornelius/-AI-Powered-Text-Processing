@@ -4,6 +4,7 @@ export interface Message {
     language: string;
     summary?: string;
     translation?: string;
+    isTranslating?: boolean;
   }
   
   export interface Language {
@@ -19,4 +20,36 @@ export interface Message {
     { code: 'tr', name: 'Turkish' },
     { code: 'fr', name: 'French' },
   ];
-  
+
+  export interface SettingsType {
+    name: string;
+    code: string;
+  }
+
+  export const SUMMARY_TYPE: SettingsType[] = [
+    {name: 'Key Point', code: 'key-points'},
+    // {name: 'TL;DR', code: 'tl-r'},
+    {name: 'Teaser', code: 'teaser'},
+    {name: 'Headline', code: 'headline'},
+  ]
+
+  export interface SettingsLength {
+    name: string;
+    code: string;
+  }
+
+  export const SUMMARY_LENGTH: SettingsLength[] = [
+    {name: 'Short', code: 'short'},
+    {name: 'Medium', code: 'medium'},
+    {name: 'Long', code: 'long'}
+  ]
+
+  export interface SettingsFormat {
+    name: string;
+    code: string;
+  }
+
+  export const SUMMARY_FORMAT: SettingsFormat[] = [
+    {name: 'Plain Text', code: 'plain-text'},
+    {name: 'Markdown', code: 'markdown'}
+  ]
