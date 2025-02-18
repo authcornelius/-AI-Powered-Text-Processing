@@ -12,6 +12,9 @@ export default function ChatInterface() {
   const [selectedLength, setSelectedLength] = useState('medium');
   const [selectedFormat, setSelectedFormat] = useState('markdown');
 
+  const [loadingMessageId, setLoadingMessageId] = useState<string | null>(null);
+
+
   const handleSend = async (text: string) => {
     if (!text.trim()) return;
 
@@ -26,31 +29,46 @@ export default function ChatInterface() {
   };
 
   const handleSummarize = async (messageId: string, type: string, length: string, format: string) => {
-    
-    const messageIndex = messages.findIndex(m => m.id === messageId);
-    if (messageIndex === -1) return;
+    setLoadingMessageId(messageId); // Show loading for this message
   
     try {
-      const updatedMessages = [...messages];
-      updatedMessages[messageIndex] = { ...updatedMessages[messageIndex], summary: "Generating summary..." };
-      setMessages(updatedMessages);
-
-      const filterData = {
-        selectedType: type,
-        selectedLength: length,
-        selectedFormat: format,
-      }
+      // Find the message
+      const message = messages.find(m => m.id === messageId);
+      if (!message) return;
   
-      // Generate a new summary
-      const summary = await summarizeText(messages[messageIndex].text, filterData);
+      // Update state to show "Generating summary..."
+      setMessages(prevMessages =>
+        prevMessages.map(msg =>
+          msg.id === messageId ? { ...msg, summary: "Generating summary..." } : msg
+        )
+      );
   
-      // Update the message with the new summary
-      updatedMessages[messageIndex] = { ...updatedMessages[messageIndex], summary: summary || "Summary failed" };
-      setMessages(updatedMessages);
+      const filterData = { selectedType: type, selectedLength: length, selectedFormat: format };
+  
+      // Measure execution time for debugging
+      const start = performance.now();
+      const summary = await summarizeText(message.text, filterData);
+      console.log(`Summarization took ${performance.now() - start}ms`);
+  
+      // Update message with the new summary
+      setMessages(prevMessages =>
+        prevMessages.map(msg =>
+          msg.id === messageId ? { ...msg, summary: summary || "Summary failed" } : msg
+        )
+      );
     } catch (error) {
-      console.error('Summarization failed:', error);
+      console.error("Summarization failed:", error);
+  
+      setMessages(prevMessages =>
+        prevMessages.map(msg =>
+          msg.id === messageId ? { ...msg, summary: "Error generating summary" } : msg
+        )
+      );
+    } finally {
+      setLoadingMessageId(null); // Hide loading state
     }
   };
+  
 
   const handleTranslate = async (messageId: string) => {
     setMessages(prevMessages =>
@@ -80,6 +98,7 @@ export default function ChatInterface() {
       );
     }
   };
+
 
   return (
     <div className="flex flex-col h-screen">

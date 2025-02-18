@@ -2,10 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="Origin-Trial" content="Au84U6xfVvZ0k3d9h+7XU2V1x9MPwG9cRoHLl6I9S2gMsdMVAV5uix/XpMK6WGwoJHGkqn5KZAkV55nZMugggQUAAABReyJvcmlnaW4iOiJodHRwOi8vbG9jYWxob3N0OjUxNzMiLCJmZWF0dXJlIjoiVHJhbnNsYXRpb25BUEkiLCJleHBpcnkiOjE3NTMxNDI0MDB9">
+    <meta http-equiv="Origin-Trial" content="">
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>AI Text Processor</title>
+    <script type="module">
+      document.querySelector('meta[http-equiv="Origin-Trial"]').content = import.meta.env.VITE_CHROME_AI_TOKEN;
+    </script>
   </head>
   <body>
     <div id="root"></div>

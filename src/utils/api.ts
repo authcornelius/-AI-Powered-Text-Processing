@@ -46,7 +46,6 @@ export async function summarizeText(
     const available = (await self.ai.summarizer.capabilities()).available;
 
     if (available === 'no') {
-      console.log("Summarizer is not available.");
       return null; // Return null if summarizer isn't available
     }
 
@@ -63,7 +62,13 @@ export async function summarizeText(
 
     // Perform the summarization
     const summary = await summarizer.summarize(text);
-    return summary;
+
+    // Add a new line before each bullet point
+    const formattedSummary = summary.replace(/\*/g, '\n*');
+    console.log(formattedSummary);
+    
+    
+    return formattedSummary;
   } catch (error) {
     console.error("Error during summarization:", error);
     return null; // Return null on error
