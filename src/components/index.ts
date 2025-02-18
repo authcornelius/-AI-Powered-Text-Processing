@@ -2,7 +2,7 @@ export interface Message {
     id: string;
     text: string;
     language: string;
-    summary: string;
+    summary?: string;
     translation?: string;
     isTranslating?: boolean;
   }
