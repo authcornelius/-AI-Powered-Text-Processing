@@ -6,6 +6,7 @@ interface MessageListProps {
   onTranslate: (id: string) => void;
   selectedLanguage: string;
   onLanguageChange: (language: string) => void;
+  loadingMessageId: string | null;
 
   selectedType: string;
   selectedLength: string;
@@ -40,6 +41,8 @@ export default function MessageList({
   onTypeChange,
   onLengthChange,
   onFormatChange,
+
+  loadingMessageId,
 }: MessageListProps) {
   
   return (
@@ -140,6 +143,12 @@ export default function MessageList({
                 </button>
               </div>
             </div>
+
+            {loadingMessageId === message.id && (
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <h4 className="text-sm font-medium text-gray-700 mb-1">Summarizing...</h4>
+              </div>
+            )}
 
             {(message.summary || message.translation || message.isTranslating) && (
               <div className="mt-4 space-y-3">

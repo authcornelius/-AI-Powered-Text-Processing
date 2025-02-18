@@ -14,6 +14,9 @@ export default function ChatInterface() {
 
   const [loadingMessageId, setLoadingMessageId] = useState<string | null>(null);
 
+  // console.log(loadingMessageId);
+  
+
 
   const handleSend = async (text: string) => {
     if (!text.trim()) return;
@@ -39,7 +42,7 @@ export default function ChatInterface() {
       // Update state to show "Generating summary..."
       setMessages(prevMessages =>
         prevMessages.map(msg =>
-          msg.id === messageId ? { ...msg, summary: "Generating summary..." } : msg
+          msg.id === messageId ? { ...msg, } : msg
         )
       );
   
@@ -120,6 +123,8 @@ export default function ChatInterface() {
         onTypeChange={setSelectedType}
         onLengthChange={setSelectedLength}
         onFormatChange={setSelectedFormat}
+
+        loadingMessageId={loadingMessageId}
       />
       <InputArea onSend={handleSend} />
     </div>
