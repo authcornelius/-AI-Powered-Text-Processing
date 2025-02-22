@@ -14,9 +14,6 @@ export default function ChatInterface() {
 
   const [loadingMessageId, setLoadingMessageId] = useState<string | null>(null);
 
-  // console.log(loadingMessageId);
-  
-
 
   const handleSend = async (text: string) => {
     if (!text.trim()) return;
@@ -51,7 +48,6 @@ export default function ChatInterface() {
       // Measure execution time for debugging
       const start = performance.now();
       const summary = await summarizeText(message.text, filterData);
-      console.log(`Summarization took ${performance.now() - start}ms`);
   
       // Update message with the new summary
       setMessages(prevMessages =>
@@ -82,6 +78,13 @@ export default function ChatInterface() {
 
     const message = messages.find(m => m.id === messageId);
     if (!message) return;
+
+    console.log(
+      'Translating message:', message.text,
+      'to language:', selectedLanguage,
+      'from language:', message.language
+    );
+    
 
     try {
       const translation = await translateText(message.text, message.language, selectedLanguage);
